@@ -5,7 +5,7 @@ import { Map, View } from 'ol'
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer'
 import {TileJSON} from 'ol/source'
 import Point from 'ol/geom/Point'
-import { fromLonLat } from 'ol/proj'
+import { fromLonLat, toLonLat } from 'ol/proj'
 import {Circle as CircleStyle, Icon, Style, Fill, Stroke} from 'ol/style.js';
 import { circular as circularPolygon } from 'ol/geom/Polygon.js'
 import Feature from 'ol/Feature';
@@ -135,6 +135,7 @@ class App extends Component {
 
   showInfo(event) {
     var features = this.olmap.getFeaturesAtPixel(event.pixel);
+    console.info(toLonLat(event.coordinate));
     if (!features) {
       this.setState({
         currentFeatureText: ''
