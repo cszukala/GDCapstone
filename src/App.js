@@ -131,6 +131,23 @@ class App extends Component {
         }
       }
     )
+    fetch(`${servername}/getcaller`)
+    .then(res => res.json())
+    .then(data=>{
+      if(data != null) {
+        for(let element of data) {
+          //console.log(element)
+          if(element.mmsi_id != null) {
+              //console.log(element.rff_name)
+              //console.log(this.state.rffs)
+              //if(!this.doesFeatureExist(parseFloat(element.lat), parseFloat(element.lon)))
+              this.createCaller(element.rff_1, element.rff_2, element.rff_theta_1, element.rff_theta_2, element.mmsi_id)
+              //console.log(this.state.rffs)
+            }
+        }
+        }
+      }
+    )
   }
 
   showInfo(event) {
@@ -160,14 +177,45 @@ class App extends Component {
     
     this.vectorAlertLayer.getSource().addFeature(new Feature(circularPolygon([lat, long], 20000, 64).clone().transform('EPSG:4326', 'EPSG:3857')))
   }
-  createCaller(lat, long, name) {
-    console.log(lat, long, name)
-    var newCaller = [lat, long]
+  createCaller(rf1, rf2, rt1, rt2, mmsi) {
+    //console.log(this.vectorSource.getFeatures()[0].getProperties().information)
+    let [lat1, long1] = [0, 0]
+    let [lat2, long2] = [0, 0]
+    for(let caller of this.vectorSource.getFeatures())
+    {
+      
+      if(caller != null)
+      {
+
+        if(caller.getProperties().information == rf1)
+        {
+        lat1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
+        long1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
+        
+        }
+        else if (caller.getProperties().information == rf2)
+        {
+          lat2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
+          long2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
+        }
+      }
+    }
+    //calculations
+    //m2 * lat + b2 = m1 * lat + b1
+    let m1 = Math.tan(rt1)
+    let m2 = Math.tan(rt2)
+    let b1 = m1 * lat1 - long1
+    let b2 = m2 * lat2 - long2
+    let lat = (b2 - b1)/(m1-m2)
+    let long = m1*lat + b1
+    console.log(m1, m2, b1, b2, lat, long)
+    
+    var newCaller = [-lat, -long]
     this.state.callers.push(newCaller);
     var callermarker = new Feature({
       // type: 'icon',
-      information:  name,
-      geometry: new Point(fromLonLat([lat, long])),
+      information:  mmsi,
+      geometry: new Point(fromLonLat([-lat, -long])),
     })
     this.vectorSource.addFeature(callermarker)
     this.vectorLayer.source = this.vectorSource

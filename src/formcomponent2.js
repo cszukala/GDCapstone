@@ -32,9 +32,11 @@ const styles = theme => ({
 
 class CallerFields extends React.Component {
   state = {
-    longitude: 0,
-    latitude: 0,
     name: '',
+    rf1: '',
+    rf2: '',
+    rt1: 0,
+    rt2:0,
     open: false,
   };
   handleOpen = () => {
@@ -52,9 +54,11 @@ class CallerFields extends React.Component {
   
   handlePostRequest() {
     const data = {
-      callername: this.state.name,
-      lat: this.state.latitude,
-      lon: this.state.longitude,
+      mmsi_id: this.state.name,
+      rf1: this.state.rf1,
+      rf2: this.state.rf2,
+      rt1: this.state.rt1,
+      rt2: this.state.rt2,
     }
     console.log(data)
     console.log(JSON.stringify(data, null, 2))
@@ -68,7 +72,7 @@ class CallerFields extends React.Component {
   }
   addcaller = () => {
     this.handlePostRequest();
-    this.props.calleradd(this.state.latitude, this.state.longitude, this.state.name);
+    this.props.calleradd(this.state.rf1, this.state.rf2, this.state.rt1, this.state.rt2, this.state.mmsi_id);
     this.setState({open: false});
   }
   render() {
@@ -84,20 +88,38 @@ class CallerFields extends React.Component {
           Enter Corresponding data for Caller and it will be displayed. Make sure the information is correct before pressing submit.
         </DialogContentText>
         <TextField
-          id="Caller Name"
-          label="caller-name"
+          id="mmsi_id"
+          label="mmsi_id"
           className={classes.textField}
-          value={this.state.name}
-          onChange={this.handleChange('name')}
+          value={this.state.mmsi_id}
+          onChange={this.handleChange('mmsi_id')}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+          id="rff_1"
+          label="rf1"
+          className={classes.textField}
+          value={this.state.rf1}
+          onChange={this.handleChange('rf1')}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+          id="rff_2"
+          label="rf2"
+          className={classes.textField}
+          value={this.state.rf2}
+          onChange={this.handleChange('rf2')}
           margin="normal"
           fullWidth
         />
 
         <TextField
         id="standard-df"
-        label="latitude"
-        value={this.state.latitude}
-        onChange={this.handleChange('latitude')}
+        label="rt_1"
+        value={this.state.rf1}
+        onChange={this.handleChange('rt1')}
         type="number"
         className={classes.textField}
         InputLabelProps={{
@@ -109,9 +131,9 @@ class CallerFields extends React.Component {
 
         <TextField
           id="standard-df"
-          label="longitude"
-          value={this.state.longitude}
-          onChange={this.handleChange('longitude')}
+          label="rt_2"
+          value={this.state.rf2}
+          onChange={this.handleChange('rt2')}
           type="number"
           className={classes.textField}
           InputLabelProps={{
