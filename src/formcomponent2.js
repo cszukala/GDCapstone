@@ -37,6 +37,9 @@ class CallerFields extends React.Component {
     rf2: '',
     rt1: 0,
     rt2:0,
+    num_people:0,
+    timestamp:'',
+    vessel_info:'',
     open: false,
   };
   handleOpen = () => {
@@ -59,6 +62,9 @@ class CallerFields extends React.Component {
       rf2: this.state.rf2,
       rt1: this.state.rt1,
       rt2: this.state.rt2,
+      num_people: this.state.num_people,
+      vi: this.state.vessel_info,
+      ts: this.state.timestamp,
     }
     console.log(data)
     console.log(JSON.stringify(data, null, 2))
@@ -72,7 +78,7 @@ class CallerFields extends React.Component {
   }
   addcaller = () => {
     this.handlePostRequest();
-    this.props.calleradd(this.state.rf1, this.state.rf2, this.state.rt1, this.state.rt2, this.state.mmsi_id);
+    this.props.calleradd(this.state.rf1, this.state.rf2, this.state.rt1, this.state.rt2, this.state.mmsi_id, this.state.num_people, this.state.vessel_info, this.state.timestamp);
     this.setState({open: false});
   }
   render() {
@@ -98,7 +104,7 @@ class CallerFields extends React.Component {
         />
         <TextField
           id="rff_1"
-          label="rf1"
+          label="rff_1"
           className={classes.textField}
           value={this.state.rf1}
           onChange={this.handleChange('rf1')}
@@ -107,7 +113,7 @@ class CallerFields extends React.Component {
         />
         <TextField
           id="rff_2"
-          label="rf2"
+          label="rff_2"
           className={classes.textField}
           value={this.state.rf2}
           onChange={this.handleChange('rf2')}
@@ -117,7 +123,7 @@ class CallerFields extends React.Component {
 
         <TextField
         id="standard-df"
-        label="rt_1"
+        label="rff_theta_1"
         value={this.state.rf1}
         onChange={this.handleChange('rt1')}
         type="number"
@@ -131,7 +137,7 @@ class CallerFields extends React.Component {
 
         <TextField
           id="standard-df"
-          label="rt_2"
+          label="rff_theta_2"
           value={this.state.rf2}
           onChange={this.handleChange('rt2')}
           type="number"
@@ -139,6 +145,37 @@ class CallerFields extends React.Component {
           InputLabelProps={{
             shrink: true,
           }}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+        id="standard-df"
+        label="num People"
+        value={this.state.num_people}
+        onChange={this.handleChange('num_people')}
+        type="number"
+        className={classes.textField}
+        InputLabelProps={{
+            shrink: true,
+        }}
+        margin="normal"
+        fullWidth
+        />
+        <TextField
+          id="vessel_info"
+          label="vessel_info"
+          className={classes.textField}
+          value={this.state.vessel_info}
+          onChange={this.handleChange('vessel_info')}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+          id="timestamp"
+          label="timestamp"
+          className={classes.textField}
+          value={this.state.timestamp}
+          onChange={this.handleChange('timestamp')}
           margin="normal"
           fullWidth
         />

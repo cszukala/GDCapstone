@@ -6,7 +6,7 @@ import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer'
 import {TileJSON} from 'ol/source'
 import Point from 'ol/geom/Point'
 import { fromLonLat, toLonLat } from 'ol/proj'
-import {Circle as CircleStyle, Icon, Style, Fill, Stroke} from 'ol/style.js';
+import {Icon, Style} from 'ol/style.js';
 import { circular as circularPolygon } from 'ol/geom/Polygon.js'
 import Feature from 'ol/Feature';
 import VectorSource from 'ol/source/Vector';
@@ -17,23 +17,6 @@ import CallerFields from './formcomponent2'
 import servername from './const'
 
 
-const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-
-  },
-  dense: {
-    marginTop: 19,
-  },
-  menu: {
-    width: 200,
-  },
-});
 class App extends Component {
   state = {
     rffs: [[-87.921045, 30.238719], [-87.899646, 30.562203], [-88.107891, 30.418700]],
@@ -106,7 +89,7 @@ class App extends Component {
   doesFeatureExist(longitude, latitude) {
     for(var i = 0; i < this.state.rffs.length; i++)
     {
-      if(this.state.rffs[i][0] == latitude && this.state.rffs[i][1] == longitude)
+      if(this.state.rffs[i][0] === latitude && this.state.rffs[i][1] === longitude)
       {
         return true;
       }
@@ -141,7 +124,7 @@ class App extends Component {
               //console.log(element.rff_name)
               //console.log(this.state.rffs)
               //if(!this.doesFeatureExist(parseFloat(element.lat), parseFloat(element.lon)))
-              this.createCaller(element.rff_1, element.rff_2, element.rff_theta_1, element.rff_theta_2, element.mmsi_id)
+              this.createCaller(element.rff_1, element.rff_2, element.rff_theta_1, element.rff_theta_2, element.mmsi_id, element.num_people, element.vessel_info, element.time_stamp)
               //console.log(this.state.rffs)
             }
         }
@@ -163,7 +146,7 @@ class App extends Component {
     console.log(properties.information)
   }
   createRFF(lat, long, name) {
-    console.log(lat, long, name)
+
     var rff = [lat, long]
     this.state.rffs.push(rff);
     var rffMarker = new Feature({
@@ -177,7 +160,7 @@ class App extends Component {
     
     this.vectorAlertLayer.getSource().addFeature(new Feature(circularPolygon([lat, long], 20000, 64).clone().transform('EPSG:4326', 'EPSG:3857')))
   }
-  createCaller(rf1, rf2, rt1, rt2, mmsi) {
+  createCaller(rf1, rf2, rt1, rt2, mmsi, np, vessinfo, ts) {
     //console.log(this.vectorSource.getFeatures()[0].getProperties().information)
     let [lat1, long1] = [0, 0]
     let [lat2, long2] = [0, 0]
@@ -187,13 +170,13 @@ class App extends Component {
       if(caller != null)
       {
 
-        if(caller.getProperties().information == rf1)
+        if(caller.getProperties().information === rf1)
         {
         lat1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
         long1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
         
         }
-        else if (caller.getProperties().information == rf2)
+        else if (caller.getProperties().information === rf2)
         {
           lat2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
           long2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
@@ -208,13 +191,12 @@ class App extends Component {
     let b2 = m2 * lat2 - long2
     let lat = (b2 - b1)/(m1-m2)
     let long = m1*lat + b1
-    console.log(m1, m2, b1, b2, lat, long)
-    
+
     var newCaller = [-lat, -long]
     this.state.callers.push(newCaller);
     var callermarker = new Feature({
       // type: 'icon',
-      information:  mmsi,
+      information:  {mmsi, np, vessinfo, ts},
       geometry: new Point(fromLonLat([-lat, -long])),
     })
     this.vectorSource.addFeature(callermarker)
@@ -250,7 +232,7 @@ class App extends Component {
   }
 
   render() {
-    const { classes } = this.props 
+    
     return (
       <div className="App">
         <div id="sidebox" className="omni">
