@@ -14,34 +14,22 @@ import image from './data/icon.png'
 import image2 from './data/ship.png'
 import TextFields from './formcomponent'
 import CallerFields from './formcomponent2'
+import Snack from './formcomponent3'
+import Men from './formcomponent4'
 import servername from './const'
 
 
 class App extends Component {
   state = {
-    rffs: [[-87.921045, 30.238719], [-87.899646, 30.562203], [-88.107891, 30.418700]],
+    rffs: [],
     callers: [],
-    center: [-87.921045, 30.458719],
+    center: [-92.421045, 29.758719],
     features: [],
     markers: [],
-    currentValue: ''
+    currentFeatureText: ''
   }
-  rffMarker1 = new Feature({
-    // type: 'icon',
-    information: "rffMarker1",
-    geometry: new Point(fromLonLat(this.state.rffs[0])),
-  })
-  rffMarker2 = new Feature({
-    // type: 'icon',
-    information: "rffMarker2",
-    geometry: new Point(fromLonLat(this.state.rffs[1])),
-  })
-  rffMarker3 = new Feature({
-    // type: 'icon',
-    information: "rffMarker3",
-    geometry: new Point(fromLonLat(this.state.rffs[2])),
-  })
-  
+
+
   imageStyle = new Style({
     image: new Icon({
       src: image,
@@ -56,7 +44,7 @@ class App extends Component {
   iconStyle = this.imageStyle
 
   vectorSource = new VectorSource({
-    features: [this.rffMarker1, this.rffMarker2, this.rffMarker3]
+    features: []
   })
   vectorLayer = new VectorLayer({
     source: this.vectorSource,
@@ -132,32 +120,19 @@ class App extends Component {
       }
     )
   }
-
-  showInfo(event) {
-    var features = this.olmap.getFeaturesAtPixel(event.pixel);
-    console.info(toLonLat(event.coordinate));
-    if (!features) {
-      this.setState({
-        currentFeatureText: ''
-      })
-      return;
-    }
-    var properties = features[0].getProperties();
-    console.log(properties.information)
-  }
   createRFF(lat, long, name) {
 
     var rff = [lat, long]
     this.state.rffs.push(rff);
     var rffMarker = new Feature({
       // type: 'icon',
-      information:  name,
+      information:  [name],
       geometry: new Point(fromLonLat([lat, long])),
     })
     this.vectorSource.addFeature(rffMarker)
     this.vectorLayer.source = this.vectorSource
     rffMarker.setStyle(this.iconStyle)
-    
+
     this.vectorAlertLayer.getSource().addFeature(new Feature(circularPolygon([lat, long], 20000, 64).clone().transform('EPSG:4326', 'EPSG:3857')))
   }
   createCaller(rf1, rf2, rt1, rt2, mmsi, np, vessinfo, ts) {
@@ -166,17 +141,17 @@ class App extends Component {
     let [lat2, long2] = [0, 0]
     for(let caller of this.vectorSource.getFeatures())
     {
-      
+
       if(caller != null)
       {
 
-        if(caller.getProperties().information === rf1)
+        if(caller.getProperties().information[0] === rf1)
         {
         lat1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
         long1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
-        
+
         }
-        else if (caller.getProperties().information === rf2)
+        else if (caller.getProperties().information[0] === rf2)
         {
           lat2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
           long2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
@@ -185,18 +160,19 @@ class App extends Component {
     }
     //calculations
     //m2 * lat + b2 = m1 * lat + b1
-    let m1 = Math.tan(rt1)
-    let m2 = Math.tan(rt2)
+    let m1 = Math.tan(rt1 * Math.PI/180)
+    let m2 = Math.tan(rt2 * Math.PI/180)
     let b1 = m1 * lat1 - long1
     let b2 = m2 * lat2 - long2
     let lat = (b2 - b1)/(m1-m2)
     let long = m1*lat + b1
+    //console.log(lat1, long1, rt1, rt2, m1, m2, b1, b2, lat, long)
 
     var newCaller = [-lat, -long]
     this.state.callers.push(newCaller);
     var callermarker = new Feature({
       // type: 'icon',
-      information:  {mmsi, np, vessinfo, ts},
+      information:  ["MMSI: " + mmsi, "Number of People: " + np, "Status: " + vessinfo, "Timestamp: " + ts],
       geometry: new Point(fromLonLat([-lat, -long])),
     })
     this.vectorSource.addFeature(callermarker)
@@ -213,9 +189,7 @@ class App extends Component {
     }))
   }
   componentDidMount() {
-    this.rffMarker1.setStyle(this.iconStyle)
-    this.rffMarker2.setStyle(this.iconStyle)
-    this.rffMarker3.setStyle(this.iconStyle)
+
     this.olmap.setTarget('map')
     this.olmap.renderSync()
     this.olmap.on('click', this.showInfo.bind(this))
@@ -223,27 +197,51 @@ class App extends Component {
     let radius = 20000
     let edgeCount = 64
 
-    for (var i = 0; i < 3; i++)
+    for (var i = 0; i < this.state.rffs.length; i++)
     {
       this.vectorAlertLayer.getSource().addFeature(new Feature(circularPolygon(this.state.rffs[i], radius, edgeCount).clone().transform('EPSG:4326', 'EPSG:3857')))
     }
     setInterval(()=>this.getJsonFromServer(), 2000)
     // console.log('This is the servername', servername)
   }
+  showInfo(event) {
+    var features = this.olmap.getFeaturesAtPixel(event.pixel);
+    //console.info(toLonLat(event.coordinate));
+    if (!features) {
+      this.setState({
+        currentFeatureText: ''
+      })
+      return;
+    }
+    var properties = features[0].getProperties();
+    let information = properties.information
+    if (!information) { return; }
+    else {
+      this.setState({
+        currentFeatureText: information
+      })
+      if (information[2])
+      {
+        //caculate distance
+        console.log(toLonLat(properties.geometry.flatCoordinates))
+      }
+    }
+  }
 
   render() {
-    
+
     return (
       <div className="App">
         <div id="sidebox" className="omni">
-            <button id="menu" title="Open Menu"></button>
+            <Men/>
             <TextFields rffadd={this.createRFF.bind(this)}></TextFields>
             <CallerFields calleradd={this.createCaller.bind(this)}></CallerFields>
-            <button id="LoB" title="Calculate LoB"></button>
-          </div> 
+            <Snack info={this.state.currentFeatureText} />
+          </div>
         <div id="map" className="map"></div>
-        <pre id="info">{this.state.currentFeatureText}</pre>
       </div>
+
+
     )
   }
 }
