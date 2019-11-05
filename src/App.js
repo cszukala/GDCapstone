@@ -8,6 +8,7 @@ import Point from 'ol/geom/Point'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import {Icon, Style} from 'ol/style.js';
 import { circular as circularPolygon } from 'ol/geom/Polygon.js'
+import LineString from 'ol/geom/LineString.js' 
 import Feature from 'ol/Feature';
 import VectorSource from 'ol/source/Vector';
 import image from './data/icon.png'
@@ -112,7 +113,7 @@ class App extends Component {
               //console.log(element.rff_name)
               //console.log(this.state.rffs)
               //if(!this.doesFeatureExist(parseFloat(element.lat), parseFloat(element.lon)))
-              this.createCaller(element.rff_1, element.rff_2, element.rff_theta_1, element.rff_theta_2, element.mmsi_id, element.num_people, element.vessel_info, element.time_stamp)
+              this.createCaller(element.rff_1, element.rff_2, element.rff_theta_1, element.rff_theta_2, element.mmsi_id, element.num_people, element.vessel_info, element.time_stamp, element.call_id)
               //console.log(this.state.rffs)
             }
         }
@@ -135,7 +136,7 @@ class App extends Component {
 
     this.vectorAlertLayer.getSource().addFeature(new Feature(circularPolygon([lat, long], 20000, 64).clone().transform('EPSG:4326', 'EPSG:3857')))
   }
-  createCaller(rf1, rf2, rt1, rt2, mmsi, np, vessinfo, ts) {
+  createCaller(rf1, rf2, rt1, rt2, mmsi, np, vessinfo, ts, callerid) {
     //console.log(this.vectorSource.getFeatures()[0].getProperties().information)
     let [lat1, long1] = [0, 0]
     let [lat2, long2] = [0, 0]
@@ -170,13 +171,32 @@ class App extends Component {
 
     var newCaller = [-lat, -long]
     this.state.callers.push(newCaller);
+
+    
+    let point = new Point(fromLonLat([-lat, -long]))
     var callermarker = new Feature({
       // type: 'icon',
-      information:  ["MMSI: " + mmsi, "Number of People: " + np, "Status: " + vessinfo, "Timestamp: " + ts],
-      geometry: new Point(fromLonLat([-lat, -long])),
+      information:  [ mmsi,  np, vessinfo,  ts, callerid],
+      geometry: point,
     })
     this.vectorSource.addFeature(callermarker)
     this.vectorLayer.source = this.vectorSource
+    
+    var linie2 = new VectorLayer({
+      source: new VectorSource({
+      features: [new Feature({
+        geometry: new LineString([fromLonLat([lat1, long1]), fromLonLat([-lat, -long])]),
+        name: 'FLAG',
+        info: callerid,
+        }),new Feature({
+          geometry: new LineString([fromLonLat([lat2, long2]), fromLonLat([-lat, -long])]),
+          name: 'FLAG',
+          info: callerid,
+          })]
+      })
+    })
+    this.olmap.addLayer(linie2)
+
     callermarker.setStyle(new Style({
       image: new Icon({
         src: image2,
@@ -196,7 +216,7 @@ class App extends Component {
     // this.vectorAlerts.on('addfeature', this.flash.bind(this))
     let radius = 20000
     let edgeCount = 64
-
+    console.log("oi")
     for (var i = 0; i < this.state.rffs.length; i++)
     {
       this.vectorAlertLayer.getSource().addFeature(new Feature(circularPolygon(this.state.rffs[i], radius, edgeCount).clone().transform('EPSG:4326', 'EPSG:3857')))
@@ -227,7 +247,10 @@ class App extends Component {
       }
     }
   }
-
+  callerDelete = (callerid) => {
+    console.log(this.olmap.getLayers().getArray()[0].getSource())
+    //make post method of delete?
+  }
   render() {
 
     return (
@@ -236,7 +259,7 @@ class App extends Component {
             <Men/>
             <TextFields rffadd={this.createRFF.bind(this)}></TextFields>
             <CallerFields calleradd={this.createCaller.bind(this)}></CallerFields>
-            <Snack info={this.state.currentFeatureText} />
+            <Snack info={this.state.currentFeatureText} callerDelete={this.callerDelete.bind(this)} />
           </div>
         <div id="map" className="map"></div>
       </div>

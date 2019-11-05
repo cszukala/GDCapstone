@@ -40,6 +40,7 @@ class CallerFields extends React.Component {
     num_people:0,
     timestamp:'',
     vessel_info:'',
+    callerid: 0,
     open: false,
   };
   handleOpen = () => {
@@ -65,6 +66,7 @@ class CallerFields extends React.Component {
       num_people: this.state.num_people,
       vi: this.state.vessel_info,
       ts: this.state.timestamp,
+      callerid: this.state.callerid
     }
     console.log(data)
     console.log(JSON.stringify(data, null, 2))
@@ -78,7 +80,7 @@ class CallerFields extends React.Component {
   }
   addcaller = () => {
     this.handlePostRequest();
-    this.props.calleradd(this.state.rf1, this.state.rf2, this.state.rt1, this.state.rt2, this.state.mmsi_id, this.state.num_people, this.state.vessel_info, this.state.timestamp);
+    this.props.calleradd(this.state.rf1, this.state.rf2, this.state.rt1, this.state.rt2, this.state.mmsi_id, this.state.num_people, this.state.vessel_info, this.state.timestamp, this.state.callerid);
     this.setState({open: false});
   }
   render() {
@@ -93,6 +95,16 @@ class CallerFields extends React.Component {
         <DialogContentText>
           Enter Corresponding data for Caller and it will be displayed. Make sure the information is correct before pressing submit.
         </DialogContentText>
+        <TextField
+        id="callerid"
+        label="callerid"
+        value={this.state.callerid}
+        onChange={this.handleChange('callerid')}
+        type="number"
+        className={classes.textField}
+        margin="normal"
+        fullWidth
+        />
         <TextField
           id="mmsi_id"
           label="mmsi_id"
@@ -124,7 +136,7 @@ class CallerFields extends React.Component {
         <TextField
         id="standard-df"
         label="rff_theta_1"
-        value={this.state.rf1}
+        value={this.state.rt1}
         onChange={this.handleChange('rt1')}
         type="number"
         className={classes.textField}
@@ -138,7 +150,7 @@ class CallerFields extends React.Component {
         <TextField
           id="standard-df"
           label="rff_theta_2"
-          value={this.state.rf2}
+          value={this.state.rt2}
           onChange={this.handleChange('rt2')}
           type="number"
           className={classes.textField}

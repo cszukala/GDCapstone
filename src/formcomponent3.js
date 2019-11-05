@@ -2,6 +2,7 @@ import React from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
   container: {
@@ -17,6 +18,7 @@ class Snack extends React.Component {
 
   state = {
     open: false,
+    callerid: 0,
 
   };
   handleOpen = () => {
@@ -31,7 +33,32 @@ class Snack extends React.Component {
     this.setState({ [name]: event.target.value });
 
   };
+  handleDelete = () => {
+    this.setState({callerid: this.props.info[4]}, () => {
+      this.props.callerDelete(this.state.callerid);
+      this.setState({open: false});})
+    
+  };
+  handleColor = () => {
+
+  };
   render() {
+    let button;
+    let bubble;
+    if( this.props.info.length > 2)
+    {
+      button = <Button onClick={this.handleDelete} variant="contained" color="secondary" >Delete</Button>
+      bubble=<p>MMSI: { this.props.info[0] } <br/>Number of People: { this.props.info[1] } <br/>Status: { this.props.info[2] } <br/>Timestamp: { this.props.info[3] }<br/></p>
+    }
+    else if (this.props.info.length > 0)
+    {
+      button = <Button onClick={this.handleColor} variant="contained" color="secondary" >Delete</Button>
+      bubble=<p>{ this.props.info[0] }</p>
+    }
+    else
+    {
+      bubble=<p>{ this.props.info[0] }</p>
+    }
     return (
       <div style={{maxWidth: 500}}>
       <button id="LoB" title="Show info" onClick={this.handleOpen}></button>
@@ -46,7 +73,8 @@ class Snack extends React.Component {
         ContentProps={{
           'aria-describedby': 'message-id',
         }}
-        message={<p>{ this.props.info[0] } <br/> { this.props.info[1] } <br/> { this.props.info[2] } <br/> { this.props.info[3] }</p>}
+        message={bubble}
+        action={button}
       />
     </div>
     );
