@@ -1,4 +1,5 @@
 import React from 'react';
+import servername from './const'
 import Snackbar from '@material-ui/core/Snackbar';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -21,6 +22,20 @@ class Snack extends React.Component {
     callerid: 0,
 
   };
+  handleDeleteRequest() {
+    const data = {
+      callerid : this.state.callerid,
+    }
+    console.log(data)
+    console.log(JSON.stringify(data, null, 2))
+    fetch(`${servername}/deletecaller`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data, null, 2)
+    }).then(res => console.log(res))
+  }
   handleOpen = () => {
     this.setState({open: !this.state.open});
   };
@@ -36,8 +51,9 @@ class Snack extends React.Component {
   handleDelete = () => {
     this.setState({callerid: this.props.info[4]}, () => {
       this.props.callerDelete(this.state.callerid);
+      this.handleDeleteRequest()
       this.setState({open: false});})
-    
+
   };
   handleColor = () => {
 

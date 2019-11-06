@@ -53,9 +53,9 @@ class CallerFields extends React.Component {
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
-   
+
   };
-  
+
   handlePostRequest() {
     const data = {
       mmsi_id: this.state.name,
@@ -70,7 +70,7 @@ class CallerFields extends React.Component {
     }
     console.log(data)
     console.log(JSON.stringify(data, null, 2))
-    fetch(`${servername}/submit`, {
+    fetch(`${servername}/addcaller`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

@@ -47,9 +47,9 @@ class TextFields extends React.Component {
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
-   
+
   };
-  
+
   handlePostRequest() {
     const data = {
       rff_name: this.state.name,
@@ -58,13 +58,13 @@ class TextFields extends React.Component {
     }
     console.log(data)
     console.log(JSON.stringify(data, null, 2))
-    fetch(`${servername}/submit`, {
+    /*fetch(`${servername}/addrff`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data, null, 2)
-    }).then(res => console.log(res))
+    }).then(res => console.log(res))*/
   }
   addrff = () => {
     this.handlePostRequest();

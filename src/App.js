@@ -8,7 +8,7 @@ import Point from 'ol/geom/Point'
 import { fromLonLat, toLonLat } from 'ol/proj'
 import {Icon, Style} from 'ol/style.js';
 import { circular as circularPolygon } from 'ol/geom/Polygon.js'
-import LineString from 'ol/geom/LineString.js' 
+import LineString from 'ol/geom/LineString.js'
 import Feature from 'ol/Feature';
 import VectorSource from 'ol/source/Vector';
 import image from './data/icon.png'
@@ -85,6 +85,16 @@ class App extends Component {
     }
     return false
   }
+  doesCallerExist(longitude, latitude) {
+    for(var i = 0; i < this.state.callers.length; i++)
+    {
+      if(this.state.callers[i][0] === latitude && this.state.callers[i][1] === longitude)
+      {
+        return true;
+      }
+    }
+    return false
+  }
   // Study arrow syntax and callbacks if you don't understand the fetch request belowl
   getJsonFromServer() {
     fetch(`${servername}/getrff`)
@@ -140,22 +150,22 @@ class App extends Component {
     //console.log(this.vectorSource.getFeatures()[0].getProperties().information)
     let [lat1, long1] = [0, 0]
     let [lat2, long2] = [0, 0]
-    for(let caller of this.vectorSource.getFeatures())
+    for(let rff of this.vectorSource.getFeatures())
     {
 
-      if(caller != null)
+      if(rff != null)
       {
 
-        if(caller.getProperties().information[0] === rf1)
+        if(rff.getProperties().information[0] === rf1)
         {
-        lat1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
-        long1 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
+        lat1 = toLonLat(rff.getProperties().geometry.flatCoordinates)[0]
+        long1 = toLonLat(rff.getProperties().geometry.flatCoordinates)[1]
 
         }
-        else if (caller.getProperties().information[0] === rf2)
+        else if (rff.getProperties().information[0] === rf2)
         {
-          lat2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[0]
-          long2 = toLonLat(caller.getProperties().geometry.flatCoordinates)[1]
+          lat2 = toLonLat(rff.getProperties().geometry.flatCoordinates)[0]
+          long2 = toLonLat(rff.getProperties().geometry.flatCoordinates)[1]
         }
       }
     }
@@ -170,9 +180,13 @@ class App extends Component {
     //console.log(lat1, long1, rt1, rt2, m1, m2, b1, b2, lat, long)
 
     var newCaller = [-lat, -long]
+    if(this.doesCallerExist( newCaller[1],newCaller[0]))
+    {
+      return
+    }
     this.state.callers.push(newCaller);
 
-    
+
     let point = new Point(fromLonLat([-lat, -long]))
     var callermarker = new Feature({
       // type: 'icon',
@@ -181,19 +195,16 @@ class App extends Component {
     })
     this.vectorSource.addFeature(callermarker)
     this.vectorLayer.source = this.vectorSource
-    
+
     var linie2 = new VectorLayer({
       source: new VectorSource({
       features: [new Feature({
         geometry: new LineString([fromLonLat([lat1, long1]), fromLonLat([-lat, -long])]),
-        name: 'FLAG',
-        info: callerid,
         }),new Feature({
           geometry: new LineString([fromLonLat([lat2, long2]), fromLonLat([-lat, -long])]),
-          name: 'FLAG',
-          info: callerid,
           })]
-      })
+      }),
+      info: callerid,
     })
     this.olmap.addLayer(linie2)
 
@@ -248,7 +259,27 @@ class App extends Component {
     }
   }
   callerDelete = (callerid) => {
-    console.log(this.olmap.getLayers().getArray()[0].getSource())
+    let rlayer
+    this.olmap.getLayers().forEach(function (layer) {
+      if(layer.get('info') != null && layer.get('info') === callerid) {
+        rlayer = layer;
+        return
+        }})
+    this.olmap.removeLayer(rlayer)
+    let rfeature
+    let features = this.vectorSource.getFeatures()
+    for(let i = 0; i < features.length; i++) {
+      if(features[i]['values_']['information'] != null && features[i]['values_']['information'][4] === callerid)
+      {
+        rfeature = features[i]
+        this.setState({
+          currentFeatureText: ''
+        })
+        break
+      }
+    }
+    this.state.callers.pop(toLonLat(rfeature['values_']['geometry']))
+    this.vectorSource.removeFeature(rfeature)
     //make post method of delete?
   }
   render() {
