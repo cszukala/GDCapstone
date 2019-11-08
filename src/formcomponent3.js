@@ -56,7 +56,8 @@ class Snack extends React.Component {
 
   };
   handleColor = () => {
-
+    this.props.rffchange(this.props.info[0])
+    this.setState({open: false})
   };
   render() {
     let button;
@@ -64,7 +65,7 @@ class Snack extends React.Component {
     if( this.props.info.length > 2)
     {
       button = <Button onClick={this.handleDelete} variant="contained" color="secondary" >Delete</Button>
-      bubble=<p>MMSI: { this.props.info[0] } <br/>Number of People: { this.props.info[1] } <br/>Status: { this.props.info[2] } <br/>Timestamp: { this.props.info[3] }<br/></p>
+      bubble=<p>MMSI: { this.props.info[0] } <br/>Number of People: { this.props.info[1] } <br/>Status: { this.props.info[2] } <br/>Timestamp: { this.props.info[3] }<br/> CallerID: { this.props.info[4] }</p>
     }
     else if (this.props.info.length > 0)
     {

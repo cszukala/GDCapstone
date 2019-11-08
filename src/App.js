@@ -6,12 +6,13 @@ import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer'
 import {TileJSON} from 'ol/source'
 import Point from 'ol/geom/Point'
 import { fromLonLat, toLonLat } from 'ol/proj'
-import {Icon, Style} from 'ol/style.js';
+import {Icon, Style, Stroke, Fill} from 'ol/style.js';
 import { circular as circularPolygon } from 'ol/geom/Polygon.js'
 import LineString from 'ol/geom/LineString.js'
 import Feature from 'ol/Feature';
 import VectorSource from 'ol/source/Vector';
 import image from './data/icon.png'
+import rimage from './data/redicon.png'
 import image2 from './data/ship.png'
 import TextFields from './formcomponent'
 import CallerFields from './formcomponent2'
@@ -139,6 +140,7 @@ class App extends Component {
       // type: 'icon',
       information:  [name],
       geometry: new Point(fromLonLat([lat, long])),
+      activate: 0,
     })
     this.vectorSource.addFeature(rffMarker)
     this.vectorLayer.source = this.vectorSource
@@ -184,6 +186,7 @@ class App extends Component {
     {
       return
     }
+    console.log(newCaller)
     this.state.callers.push(newCaller);
 
 
@@ -278,9 +281,44 @@ class App extends Component {
         break
       }
     }
-    this.state.callers.pop(toLonLat(rfeature['values_']['geometry']))
+    //console.log(toLonLat(rfeature['values_']['geometry'].flatCoordinates))
+    for( let i = 0; i < this.state.callers.length; i++)
+    {
+      //console.log("Comparison: ", this.state.callers[i], toLonLat(rfeature['values_']['geometry'].flatCoordinates))
+
+      if(this.state.callers[i][0] == toLonLat(rfeature['values_']['geometry'].flatCoordinates)[0] && this.state.callers[i][1] == toLonLat(rfeature['values_']['geometry'].flatCoordinates)[1]) {
+        this.state.callers.splice(i, 1)}
+    }
+    //this.state.callers.splice(this.state.callers.indexOf(toLonLat(rfeature['values_']['geometry'].flatCoordinates)), 1)
+    //console.log(this.state.callers)
     this.vectorSource.removeFeature(rfeature)
     //make post method of delete?
+  }
+  rffC = (rff_name) => {
+    let features = this.vectorSource.getFeatures()
+    let iStyle = new Style({
+      image: new Icon({
+        src: rimage,
+        // the scale factor
+        scale: .06,
+        anchor: [0.5, 0.5],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'fraction',
+      })
+    })
+    for(let i = 0; i < features.length; i++){
+      if(features[i]['values_']['information'] == rff_name && features[i]['values_']['activate'] == 0)
+      {
+        features[i].setStyle(iStyle);
+        features[i]['values_']['activate'] = 1
+        console.log("hello")
+      }
+      else if(features[i]['values_']['information'] == rff_name && features[i]['values_']['activate'] == 1)
+      {
+        features[i]['values_']['activate'] = 0
+        features[i].setStyle(this.imageStyle);
+      }
+    }
   }
   render() {
 
@@ -290,7 +328,7 @@ class App extends Component {
             <Men/>
             <TextFields rffadd={this.createRFF.bind(this)}></TextFields>
             <CallerFields calleradd={this.createCaller.bind(this)}></CallerFields>
-            <Snack info={this.state.currentFeatureText} callerDelete={this.callerDelete.bind(this)} />
+            <Snack info={this.state.currentFeatureText} callerDelete={this.callerDelete.bind(this)} rffchange={this.rffC.bind(this)} />
           </div>
         <div id="map" className="map"></div>
       </div>
