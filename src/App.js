@@ -6,7 +6,7 @@ import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer'
 import {TileJSON} from 'ol/source'
 import Point from 'ol/geom/Point'
 import { fromLonLat, toLonLat } from 'ol/proj'
-import {Icon, Style, Stroke, Fill} from 'ol/style.js';
+import {Icon, Style} from 'ol/style.js';
 import { circular as circularPolygon } from 'ol/geom/Polygon.js'
 import LineString from 'ol/geom/LineString.js'
 import Feature from 'ol/Feature';

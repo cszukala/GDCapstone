@@ -24,16 +24,17 @@ class Snack extends React.Component {
   };
   handleDeleteRequest() {
     const data = {
-      callerid : this.state.callerid,
+      call_id : this.state.callerid,
     }
+    console.log("THIS IS MY LATEST VERSION OF THE CODE")
     console.log(data)
-    console.log(JSON.stringify(data, null, 2))
-    fetch(`${servername}/deletecaller`, {
-        method: 'DELETE',
+    console.log(JSON.stringify(data))
+    return fetch(`${servername}/deletecaller`, {
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'content-type': 'application/json',
         },
-        body: JSON.stringify(data, null, 2)
+        body: JSON.stringify(data)
     }).then(res => console.log(res))
   }
   handleOpen = () => {

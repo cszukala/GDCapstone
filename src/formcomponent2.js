@@ -59,23 +59,22 @@ class CallerFields extends React.Component {
   handlePostRequest() {
     const data = {
       mmsi_id: this.state.name,
-      rf1: this.state.rf1,
-      rf2: this.state.rf2,
-      rt1: this.state.rt1,
-      rt2: this.state.rt2,
+      rff_1: this.state.rf1,
+      rff_2: this.state.rf2,
+      rff_theta_1: this.state.rt1,
+      rff_theta_2: this.state.rt2,
       num_people: this.state.num_people,
-      vi: this.state.vessel_info,
-      ts: this.state.timestamp,
-      callerid: this.state.callerid
+      vessel_info: this.state.vessel_info,
+      timestamp: this.state.timestamp,
     }
     console.log(data)
-    console.log(JSON.stringify(data, null, 2))
-    fetch(`${servername}/addcaller`, {
+    console.log(JSON.stringify(data))
+    return fetch(`${servername}/addcaller`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'content-type': 'application/json'
         },
-        body: JSON.stringify(data, null, 2)
+        body: JSON.stringify(data)
     }).then(res => console.log(res))
   }
   addcaller = () => {
@@ -95,16 +94,6 @@ class CallerFields extends React.Component {
         <DialogContentText>
           Enter Corresponding data for Caller and it will be displayed. Make sure the information is correct before pressing submit.
         </DialogContentText>
-        <TextField
-        id="callerid"
-        label="callerid"
-        value={this.state.callerid}
-        onChange={this.handleChange('callerid')}
-        type="number"
-        className={classes.textField}
-        margin="normal"
-        fullWidth
-        />
         <TextField
           id="mmsi_id"
           label="mmsi_id"
