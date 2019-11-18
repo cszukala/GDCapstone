@@ -63,7 +63,7 @@ class CallerFields extends React.Component {
       rff_2: this.state.rf2,
       rff_theta_1: this.state.rt1,
       rff_theta_2: this.state.rt2,
-      num_people: this.state.num_people,
+      num_people: Number(this.state.num_people),
       vessel_info: this.state.vessel_info,
       time_stamp: this.state.timestamp,
     }
