@@ -69,7 +69,7 @@ class CallerFields extends React.Component {
     }
     console.log(data)
     console.log(JSON.stringify(data))
-    return fetch(`${servername}/addcaller`, {
+    return fetch(`${servername}/newcaller`, {
         method: 'POST',
         headers: {
             'content-type': 'application/json'
