@@ -1,3 +1,3 @@
-const servername = 'http://ec2-18-220-215-42.us-east-2.compute.amazonaws.com:3000'
+const servername = 'http://ec2-34-220-147-201.us-west-2.compute.amazonaws.com:3000'
 
 export default servername
