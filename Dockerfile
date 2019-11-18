@@ -2,7 +2,7 @@ FROM node:8
 RUN mkdir /frontend
 WORKDIR /frontend
 
-RUN git clone https://github.com/wongcoder/GDCapstone.git
+RUN git clone https://github.com/cszukala/GDCapstone.git
 
 WORKDIR GDCapstone/
 RUN ls
