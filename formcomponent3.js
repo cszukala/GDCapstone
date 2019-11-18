@@ -26,6 +26,7 @@ class Snack extends React.Component {
     const data = {
       call_id : this.state.callerid,
     }
+    console.log("THIS IS MY LATEST VERSION OF THE CODE")
     console.log(data)
     console.log(JSON.stringify(data))
     return fetch(`${servername}/deletecaller`, {
