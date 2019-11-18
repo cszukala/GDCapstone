@@ -66,16 +66,15 @@ class CallerFields extends React.Component {
       num_people: this.state.num_people,
       vessel_info: this.state.vessel_info,
       timestamp: this.state.timestamp,
-      call_id: this.state.callerid
     }
     console.log(data)
-    console.log(JSON.stringify(data, null, 2))
-    fetch(`${servername}/addcaller`, {
+    console.log(JSON.stringify(data))
+    return fetch(`${servername}/addcaller`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'content-type': 'application/json'
         },
-        body: JSON.stringify(data, null, 2)
+        body: JSON.stringify(data)
     }).then(res => console.log(res))
   }
   addcaller = () => {
