@@ -95,16 +95,6 @@ class CallerFields extends React.Component {
           Enter Corresponding data for Caller and it will be displayed. Make sure the information is correct before pressing submit.
         </DialogContentText>
         <TextField
-        id="callerid"
-        label="callerid"
-        value={this.state.callerid}
-        onChange={this.handleChange('callerid')}
-        type="number"
-        className={classes.textField}
-        margin="normal"
-        fullWidth
-        />
-        <TextField
           id="mmsi_id"
           label="mmsi_id"
           className={classes.textField}
