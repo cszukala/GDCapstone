@@ -286,7 +286,7 @@ class App extends Component {
     {
       //console.log("Comparison: ", this.state.callers[i], toLonLat(rfeature['values_']['geometry'].flatCoordinates))
 
-      if(this.state.callers[i][0] == toLonLat(rfeature['values_']['geometry'].flatCoordinates)[0] && this.state.callers[i][1] == toLonLat(rfeature['values_']['geometry'].flatCoordinates)[1]) {
+      if(this.state.callers[i][0] === toLonLat(rfeature['values_']['geometry'].flatCoordinates)[0] && this.state.callers[i][1] === toLonLat(rfeature['values_']['geometry'].flatCoordinates)[1]) {
         this.state.callers.splice(i, 1)}
     }
     //this.state.callers.splice(this.state.callers.indexOf(toLonLat(rfeature['values_']['geometry'].flatCoordinates)), 1)
@@ -307,13 +307,13 @@ class App extends Component {
       })
     })
     for(let i = 0; i < features.length; i++){
-      if(features[i]['values_']['information'] == rff_name && features[i]['values_']['activate'] == 0)
+      if(features[i]['values_']['information'] === rff_name && features[i]['values_']['activate'] === 0)
       {
         features[i].setStyle(iStyle);
         features[i]['values_']['activate'] = 1
         console.log("hello")
       }
-      else if(features[i]['values_']['information'] == rff_name && features[i]['values_']['activate'] == 1)
+      else if(features[i]['values_']['information'] === rff_name && features[i]['values_']['activate'] === 1)
       {
         features[i]['values_']['activate'] = 0
         features[i].setStyle(this.imageStyle);
