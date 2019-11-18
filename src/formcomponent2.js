@@ -99,7 +99,7 @@ class CallerFields extends React.Component {
           label="mmsi_id"
           className={classes.textField}
           value={this.state.mmsi_id}
-          onChange={this.handleChange('mmsi_id')}
+          onChange={this.handleChange('name')}
           margin="normal"
           fullWidth
         />
